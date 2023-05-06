@@ -5,33 +5,20 @@
 
     @php
 
-        /*if(count($respostas)>0){
-            for($i = 0; $i<count($respostas); $i++){
-                $responses[] = $respostas[$i]['respostas'];
-                $vals = array_count_values($responses);
-            }
-            $haveValues = true;
-
-        }else{
-            $haveValues = false;
-        }*/
-        $haveValues = false;
-        if(count($respostas)>0){
-            for($i = 0; $i<count($respostas); $i++){
-                $responses[] = $respostas[$i]['respostas'][0];
-                $vals = array_count_values($responses);
+        function getVals($respostas){
+            if(count($respostas) > 0){
+                for($i = 0; $i<count($respostas); $i++){
+                    $responses[] = $respostas[$i]['respostas'][0];
+                    $vals = array_count_values($responses);
+                } 
+            }else {
+                $vals = null;
             }
             
-            $haveValues = true;
-
-            
-            
-        
-        }else{
-                $haveValues = false;
+            return $vals;
         }
-       
-     
+        
+        $vals = getVals($respostas);
 
     @endphp
 
@@ -46,20 +33,15 @@
                 @endforeach
                 <input type="submit" value="Responder">
             </form>
-            @if($haveValues == true)
-                @foreach ($vals as $key => $val)
-                    <div class="progress m-5" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 50px; font-size:1.1em">
-                        <div class="progress-bar" style="width: {{$val*10}}%">{{$key}}</div>
-                    </div>
-                @endforeach
-            @endif
-            @if($haveValues == false)
-                @foreach ($enquete[0]['opcoes'] as $opcao)
-                    <div class="progress m-5" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 50px; font-size:1.1em">
-                        <div class="progress-bar" style="width: 2%">{{$opcao}}</div>
-                    </div>
-                @endforeach  
-            @endif
+            @foreach($enquete[0]['opcoes'] as $opcao)
+                <div class="progress m-3" role="progressbar" aria-label="Example 20px high" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                    @if( !is_null($vals) && array_key_exists($opcao, $vals))
+                        <div class="progress-bar" style="width: {{$vals[$opcao] * 10}}%">{{$opcao}}</div>
+                    @else 
+                        <div class="progress-bar" style="width: 1%">{{$opcao}}</div>
+                    @endif
+                </div>
+            @endforeach
 
         </div>
     </div>
